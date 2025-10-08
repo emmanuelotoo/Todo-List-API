@@ -3,12 +3,10 @@ package dev.emmanuelotoo.todolistapi.controllers;
 import dev.emmanuelotoo.todolistapi.dtos.TodoItemDto;
 import dev.emmanuelotoo.todolistapi.entities.TodoItem;
 import dev.emmanuelotoo.todolistapi.services.TodoItemService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/todos")
@@ -19,43 +17,31 @@ public class TodoItemController {
         this.todoItemService = todoItemService;
     }
 
-
-    // Creating a To-Do item
-    @PostMapping()
-    public ResponseEntity<TodoItem> createTodoItem(@RequestBody TodoItemDto todoItemDto) {
-        return todoItemService.saveTodoItem(todoItemDto);
+    @PostMapping
+    public ResponseEntity<TodoItem> createTodoItem(@RequestBody TodoItemDto todoItemDto, @RequestParam Long userId) {
+        return todoItemService.saveTodoItem(todoItemDto, userId);
     }
 
-
-    // Getting all To-Do items
-    @GetMapping()
-    public ResponseEntity<List<TodoItem>> getAllTodoItems() {
-        List<TodoItem> todoItems = todoItemService.getAllTodoItems();
-        return ResponseEntity.ok(todoItems);
+    @GetMapping
+    public ResponseEntity<List<TodoItem>> getAllTodoItems(@RequestParam Long userId) {
+        return ResponseEntity.ok(todoItemService.getAllTodoItemsByUserId(userId));
     }
 
-
-    // Deleting a To-Do item
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTodoItem(@PathVariable Long id) {
-        if (todoItemService.getTodoItemById(id).isPresent()) {
-            todoItemService.deleteTodoItem(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("/{todoId}")
+    public ResponseEntity<TodoItem> getTodoItemById(@PathVariable Long todoId, @RequestParam Long userId) {
+        return todoItemService.getTodoItemByIdAndUserId(todoId, userId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-
-    // Updating a To-Do item
-    @PutMapping("/{id}")
-    public ResponseEntity<TodoItem> updateTodoItem(@PathVariable Long id, @RequestBody TodoItemDto todoItemDto) {
-        try {
-            TodoItem updatedTodoItem = todoItemService.updateTodoItem(id, todoItemDto);
-            return ResponseEntity.ok(updatedTodoItem);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    @PutMapping("/{todoId}")
+    public ResponseEntity<TodoItem> updateTodoItem(@PathVariable Long todoId, @RequestBody TodoItemDto todoItemDto, @RequestParam Long userId) {
+        return ResponseEntity.ok(todoItemService.updateTodoItem(todoId, todoItemDto, userId));
     }
 
+    @DeleteMapping("/{todoId}")
+    public ResponseEntity<Void> deleteTodoItem(@PathVariable Long todoId, @RequestParam Long userId) {
+        todoItemService.deleteTodoItem(todoId, userId);
+        return ResponseEntity.noContent().build();
+    }
 }

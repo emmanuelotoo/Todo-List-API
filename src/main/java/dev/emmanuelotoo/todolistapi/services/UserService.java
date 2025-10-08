@@ -20,16 +20,21 @@ public class UserService {
 
     // Register user
     public User registerUser(RegisterRequest registerRequest) {
+        if (userRepository.existsByEmail(registerRequest.email())) {
+            throw new IllegalArgumentException("Email is already in use");
+        }
+
         User user = new User();
         user.setName(registerRequest.name());
         user.setEmail(registerRequest.email());
 
         // Encode password with Base64
-        String encodedPassword = Base64.getEncoder().encodeToString(registerRequest.password().getBytes(StandardCharsets.UTF_8));
+        String encodedPassword = Base64.getEncoder().encodeToString(registerRequest.passwordHash().getBytes(StandardCharsets.UTF_8));
         user.setPasswordHash(encodedPassword);
 
         return userRepository.save(user);
     }
+
 
     // Login user
     public boolean login(String email, String rawPassword) {
