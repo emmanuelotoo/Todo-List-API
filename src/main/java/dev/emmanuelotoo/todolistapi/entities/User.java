@@ -1,5 +1,6 @@
 package dev.emmanuelotoo.todolistapi.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -39,5 +40,6 @@ public class User {
     private String token;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<TodoItem> todoItems;
 }

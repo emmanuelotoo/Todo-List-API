@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TodoItemService {
@@ -44,10 +43,6 @@ public class TodoItemService {
         return todoItemRepository.findByUser(user);
     }
 
-    // Getting a To-Do item by its id for a specific user
-    public Optional<TodoItem> getTodoItemByIdAndUserId(Long todoId, Long userId) {
-        return todoItemRepository.findByIdAndUserId(todoId, userId);
-    }
 
     // Deleting a To-Do item for a specific user
     public void deleteTodoItem(Long todoId, Long userId) {

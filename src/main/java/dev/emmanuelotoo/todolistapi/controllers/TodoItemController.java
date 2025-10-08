@@ -27,12 +27,6 @@ public class TodoItemController {
         return ResponseEntity.ok(todoItemService.getAllTodoItemsByUserId(userId));
     }
 
-    @GetMapping("/{todoId}")
-    public ResponseEntity<TodoItem> getTodoItemById(@PathVariable Long todoId, @RequestParam Long userId) {
-        return todoItemService.getTodoItemByIdAndUserId(todoId, userId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
 
     @PutMapping("/{todoId}")
     public ResponseEntity<TodoItem> updateTodoItem(@PathVariable Long todoId, @RequestBody TodoItemDto todoItemDto, @RequestParam Long userId) {
