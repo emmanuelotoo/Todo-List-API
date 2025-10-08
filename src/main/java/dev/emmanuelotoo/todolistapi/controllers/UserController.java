@@ -1,5 +1,7 @@
 package dev.emmanuelotoo.todolistapi.controllers;
 
+import dev.emmanuelotoo.todolistapi.dtos.LoginRequest;
+import dev.emmanuelotoo.todolistapi.dtos.RegisterRequest;
 import dev.emmanuelotoo.todolistapi.entities.User;
 import dev.emmanuelotoo.todolistapi.services.UserService;
 import org.springframework.http.ResponseEntity;
@@ -20,20 +22,21 @@ public class UserController {
 
     // Register user
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
-        User savedUser = userService.registerUser(user);
+    public ResponseEntity<User> registerUser(@RequestBody RegisterRequest registerRequest) {
+        User savedUser = userService.registerUser(registerRequest);
         return ResponseEntity.ok(savedUser);
     }
 
     // Login user
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody User user) {
-        boolean success = userService.login(user.getEmail(), user.getPasswordHash());
+    public ResponseEntity<String> loginUser(@RequestBody LoginRequest loginRequest) {
+        boolean success = userService.login(loginRequest.email(), loginRequest.password());
         if (success) {
             return ResponseEntity.ok("Login successful");
         } else {
             return ResponseEntity.status(401).body("Invalid email or password");
         }
     }
+
 
 }

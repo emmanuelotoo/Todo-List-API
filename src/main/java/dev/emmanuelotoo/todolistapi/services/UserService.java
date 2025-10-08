@@ -1,5 +1,6 @@
 package dev.emmanuelotoo.todolistapi.services;
 
+import dev.emmanuelotoo.todolistapi.dtos.RegisterRequest;
 import dev.emmanuelotoo.todolistapi.entities.User;
 import dev.emmanuelotoo.todolistapi.repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -18,14 +19,19 @@ public class UserService {
     }
 
     // Register user
-    public User registerUser(User user) {
-        // Encode password with Base64 before saving
-        String encodedPassword = Base64.getEncoder().encodeToString(user.getPasswordHash().getBytes(StandardCharsets.UTF_8));
+    public User registerUser(RegisterRequest registerRequest) {
+        User user = new User();
+        user.setName(registerRequest.name());
+        user.setEmail(registerRequest.email());
+
+        // Encode password with Base64
+        String encodedPassword = Base64.getEncoder().encodeToString(registerRequest.password().getBytes(StandardCharsets.UTF_8));
         user.setPasswordHash(encodedPassword);
+
         return userRepository.save(user);
     }
 
-    // Login User
+    // Login user
     public boolean login(String email, String rawPassword) {
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isPresent()) {
@@ -37,7 +43,4 @@ public class UserService {
         }
         return false;
     }
-
-
-
 }
