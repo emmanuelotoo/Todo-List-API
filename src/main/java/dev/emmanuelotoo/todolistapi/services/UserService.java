@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Service
 public class UserService {
@@ -32,20 +34,53 @@ public class UserService {
         String encodedPassword = Base64.getEncoder().encodeToString(registerRequest.passwordHash().getBytes(StandardCharsets.UTF_8));
         user.setPasswordHash(encodedPassword);
 
+        // Generating a random token for the user with 5-minute expiration
+        user.setToken(UUID.randomUUID().toString());
+        user.setTokenExpiresAt(LocalDateTime.now().plusMinutes(5));
+
+
         return userRepository.save(user);
     }
 
 
     // Login user
-    public boolean login(String email, String rawPassword) {
+    public Optional<String> login(String email, String rawPassword) {
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
 
-            // Encode the raw password and compare with the stored password
+            // Encoding the raw password to compare with the stored hash; returns the token if auth is successful
             String encodedPassword = Base64.getEncoder().encodeToString(rawPassword.getBytes(StandardCharsets.UTF_8));
-            return user.getPasswordHash().equals(encodedPassword);
+            if (user.getPasswordHash().equals(encodedPassword)) {
+
+                // Refresh token expiration time to 5 minutes from now
+                user.setTokenExpiresAt(LocalDateTime.now().plusMinutes(5));
+                userRepository.save(user);
+                return Optional.of(user.getToken());
+            }
+        }
+        return Optional.empty();
+    }
+
+
+    // validate if the token is valid and not expired
+    public boolean isTokenValid(String token) {
+        Optional<User> userOpt = userRepository.findByToken(token);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            return user.getTokenExpiresAt() != null &&
+                    LocalDateTime.now().isBefore(user.getTokenExpiresAt());
         }
         return false;
     }
+
+    // Get user by token
+    public Optional<User> getUserByToken(String token) {
+        if (!isTokenValid(token)) {
+            return Optional.empty();
+        }
+        return userRepository.findByToken(token);
+    }
+
+
 }

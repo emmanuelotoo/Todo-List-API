@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -14,7 +15,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
 
     @Column(unique = true, nullable = false)
@@ -23,21 +23,11 @@ public class User {
     @Column(nullable = false)
     private String passwordHash;
 
-    //my email
-    //password
-
-    //Register
-    //insert raw email
-    //encode password using bse64
-
-    //Login
-    //email
-    //Take raw password and encode using base64
-    //compare with passwordHash
-
-
     @Column(unique = true)
     private String token;
+
+    @Column
+    private LocalDateTime tokenExpiresAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

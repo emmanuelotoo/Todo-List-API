@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -22,20 +24,17 @@ public class UserController {
 
     // Register user
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<Map<String, String>> registerUser(@RequestBody RegisterRequest registerRequest) {
         User savedUser = userService.registerUser(registerRequest);
-        return ResponseEntity.ok(savedUser);
+        return ResponseEntity.ok(Map.of("token", savedUser.getToken()));
     }
 
     // Login user
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody LoginRequest loginRequest) {
-        boolean success = userService.login(loginRequest.email(), loginRequest.passwordHash());
-        if (success) {
-            return ResponseEntity.ok("Login successful");
-        } else {
-            return ResponseEntity.status(401).body("Invalid email or password");
-        }
+    public ResponseEntity<Map<String, String>> loginUser(@RequestBody LoginRequest loginRequest) {
+        return userService.login(loginRequest.email(), loginRequest.passwordHash())
+                .map(token -> ResponseEntity.ok(Map.of("token", token)))
+                .orElse(ResponseEntity.status(401).body(Map.of("error", "Invalid credentials")));
     }
 
 
