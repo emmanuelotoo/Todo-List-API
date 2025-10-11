@@ -32,7 +32,7 @@ public class TodoItemService {
         todoItem.setDescription(todoItemDto.description());
         todoItem.setUser(user);
 
-        TodoItem savedTodoItem = todoItemRepository.save(todoItem);
+        TodoItem savedTodoItem = todoItemRepository.saveAndFlush(todoItem);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedTodoItem);
     }
 

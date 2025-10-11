@@ -26,6 +26,12 @@ public class User {
     @Column(unique = true)
     private String token;
 
+    @Column(unique = true)
+    private String refreshToken;
+
+    private LocalDateTime refreshTokenExpiresAt;
+
+
     @Column
     private LocalDateTime tokenExpiresAt;
 

@@ -38,6 +38,9 @@ public class UserService {
         user.setToken(UUID.randomUUID().toString());
         user.setTokenExpiresAt(LocalDateTime.now().plusMinutes(5));
 
+        // Generate refresh token valid for 7 days
+        user.setRefreshToken(UUID.randomUUID().toString());
+        user.setRefreshTokenExpiresAt(LocalDateTime.now().plusDays(7));
 
         return userRepository.save(user);
     }
@@ -53,8 +56,14 @@ public class UserService {
             String encodedPassword = Base64.getEncoder().encodeToString(rawPassword.getBytes(StandardCharsets.UTF_8));
             if (user.getPasswordHash().equals(encodedPassword)) {
 
-                // Refresh token expiration time to 5 minutes from now
+                // Generating a new access token on each login
+                user.setToken(UUID.randomUUID().toString());
                 user.setTokenExpiresAt(LocalDateTime.now().plusMinutes(5));
+
+                // Refresh the refresh token expiration
+                user.setRefreshToken(UUID.randomUUID().toString());
+                user.setRefreshTokenExpiresAt(LocalDateTime.now().plusDays(7));
+
                 userRepository.save(user);
                 return Optional.of(user.getToken());
             }
@@ -82,5 +91,24 @@ public class UserService {
         return userRepository.findByToken(token);
     }
 
+    public Optional<String> refreshAccessToken(String refreshToken) {
+        Optional<User> userOpt = userRepository.findByRefreshToken(refreshToken);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+
+            // Check if the refresh token is still valid
+            if (user.getRefreshTokenExpiresAt() != null &&
+                LocalDateTime.now().isBefore(user.getRefreshTokenExpiresAt())) {
+
+
+                // Generate a new access token
+                user.setToken(UUID.randomUUID().toString());
+                user.setTokenExpiresAt(LocalDateTime.now().plusMinutes(5));
+                userRepository.save(user);
+                return Optional.of(user.getToken());
+            }
+        }
+        return Optional.empty();
+    }
 
 }
