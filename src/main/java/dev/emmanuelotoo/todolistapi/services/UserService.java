@@ -60,7 +60,7 @@ public class UserService {
                 user.setToken(UUID.randomUUID().toString());
                 user.setTokenExpiresAt(LocalDateTime.now().plusMinutes(5));
 
-                // Refresh the refresh token expiration
+                // Replace the refresh token and extend its expiration date
                 user.setRefreshToken(UUID.randomUUID().toString());
                 user.setRefreshTokenExpiresAt(LocalDateTime.now().plusDays(7));
 
@@ -72,7 +72,7 @@ public class UserService {
     }
 
 
-    // validate if the token is valid and not expired
+    // validate if the access token is valid and not expired
     public boolean isTokenValid(String token) {
         Optional<User> userOpt = userRepository.findByToken(token);
         if (userOpt.isPresent()) {
@@ -91,6 +91,8 @@ public class UserService {
         return userRepository.findByToken(token);
     }
 
+
+    // Refresh  token
     public Optional<String> refreshAccessToken(String refreshToken) {
         Optional<User> userOpt = userRepository.findByRefreshToken(refreshToken);
         if (userOpt.isPresent()) {

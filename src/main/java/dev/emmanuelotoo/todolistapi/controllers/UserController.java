@@ -43,7 +43,7 @@ public class UserController {
     }
 
 
-
+    // Exchanging a refresh token for a new access token
     @PostMapping("/refresh")
     public ResponseEntity<Map<String, String>> refreshToken(@RequestHeader("Refresh-Token") String refreshToken) {
         Optional<String> newAccessToken = userService.refreshAccessToken(refreshToken);
