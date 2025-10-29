@@ -41,24 +41,24 @@ The API will start on `http://localhost:8080`
 
 #### Register a new user
 ```http
-POST /api/auth/register
+POST /api/users/register
 Content-Type: application/json
 
 {
-  "username": "user",
+  "name": "user",
   "email": "user@example.com",
-  "password": "password123"
+  "passwordHash": "password123"
 }
 ```
 
 #### Login
 ```http
-POST /api/auth/login
+POST /api/users/login
 Content-Type: application/json
 
 {
-  "username": "user",
-  "password": "password123"
+  "email": "user",
+  "passwordHash": "password123"
 }
 ```
 
@@ -66,7 +66,7 @@ Response includes `accessToken` and `refreshToken`.
 
 #### Refresh Access Token
 ```http
-POST /api/auth/refresh
+POST /api/users/refresh
 Authorization: Bearer <refresh_token>
 ```
 
@@ -78,39 +78,37 @@ All todo endpoints require the access token in the Authorization header:
 
 #### Get all todos
 ```http
-GET /api/todos
+GET /api/todos?userId={}
 Authorization: Bearer <access_token>
 ```
 
 #### Create a todo
 ```http
-POST /api/todos
+POST /api/todos?userId={}
 Authorization: Bearer <access_token>
 Content-Type: application/json
 
 {
   "title": "Buy groceries",
-  "description": "Milk, bread, eggs",
-  "completed": false
+  "description": "Milk, bread, eggs"
 }
 ```
 
 #### Update a todo
 ```http
-PUT /api/todos/{id}
+PUT /api/todos/{}?userId={}
 Authorization: Bearer <access_token>
 Content-Type: application/json
 
 {
   "title": "Updated title",
-  "description": "Updated description",
-  "completed": true
+  "description": "Updated description"
 }
 ```
 
 #### Delete a todo
 ```http
-DELETE /api/todos/{id}
+DELETE /api/todos/{}?userId={}
 Authorization: Bearer <access_token>
 ```
 
