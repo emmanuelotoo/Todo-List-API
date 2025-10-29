@@ -13,7 +13,6 @@ This API provides secure endpoints for creating, reading, updating, and deleting
 
 - Java 21 or higher
 - Maven 3.6+
-- Database (PostgreSQL/MySQL)
 
 ### Setup
 
