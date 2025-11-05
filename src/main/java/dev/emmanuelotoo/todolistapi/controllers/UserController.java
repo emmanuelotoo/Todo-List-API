@@ -48,11 +48,8 @@ public class UserController {
     public ResponseEntity<Map<String, String>> refreshToken(@RequestHeader("Refresh-Token") String refreshToken) {
         Optional<String> newAccessToken = userService.refreshAccessToken(refreshToken);
 
-        if (newAccessToken.isPresent()) {
-            return ResponseEntity.ok(Map.of("token", newAccessToken.get()));
-        }
-        return ResponseEntity.status(401)
-                .body(Map.of("error", "Invalid or expired refresh token"));
+        return newAccessToken.map(s -> ResponseEntity.ok(Map.of("token", s))).orElseGet(() -> ResponseEntity.status(401)
+                .body(Map.of("error", "Invalid or expired refresh token")));
     }
 
 }
