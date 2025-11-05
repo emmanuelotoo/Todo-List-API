@@ -1,10 +1,10 @@
 # Todo List API
 
-A RESTful API for managing todo lists with JWT authentication built with Spring Boot.
+A RESTful API for managing todo lists built with Spring Boot.
 
 ## Description
 
-This API provides secure endpoints for creating, reading, updating, and deleting todo items. It includes user authentication and authorization using JWT tokens with access and refresh token mechanisms.
+This API provides secure endpoints for creating, reading, updating, and deleting todo items. It includes user authentication and authorization using manually generated tokens with access and refresh token mechanisms.
 
 
 ## How to Run
